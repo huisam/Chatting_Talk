@@ -133,9 +133,9 @@ public class ChatClient extends Thread {
 	}
 
 	public static void main(String[] args) {
-		ChatClient client = new ChatClient("localhost", 8080, "선생님");
-		ChatClient client2 = new ChatClient("localhost", 8080, "반장");
-		ChatClient client3 = new ChatClient("localhost", 8080, "학생");
+		ChatClient client = new ChatClient("localhost", 8888, "선생님");
+		ChatClient client2 = new ChatClient("localhost", 8888, "반장");
+		ChatClient client3 = new ChatClient("localhost", 8888, "학생");
 		client.start();
 		client2.start();
 		client3.start();

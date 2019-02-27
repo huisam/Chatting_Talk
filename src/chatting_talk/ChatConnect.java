@@ -23,7 +23,7 @@ public class ChatConnect {
 
 	public void go() {
 		try {
-			s = new Socket("localhost", 8080);
+			s = new Socket("localhost", 8888);
 			oos = new ObjectOutputStream(s.getOutputStream());
 			ois = new ObjectInputStream(s.getInputStream());
 

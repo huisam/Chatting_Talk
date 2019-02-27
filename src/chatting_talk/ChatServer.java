@@ -12,9 +12,11 @@ public class ChatServer {
 
 	class ChatServerThread extends Thread {
 		private ObjectInputStream ois;
+		private Socket s;
 
-		public ChatServerThread(ObjectInputStream ois) {
+		public ChatServerThread(ObjectInputStream ois, Socket s) {
 			this.ois = ois;
+			this.s = s;
 		}
 
 		@SuppressWarnings("deprecation")
@@ -24,15 +26,21 @@ public class ChatServer {
 				try {
 					String msg = (String) ois.readObject();
 					broadcast(msg);
-				} catch(EOFException ee) {
+				} catch (EOFException ee) {
 					removeClient(ois);
-					System.out.println(getName() + ": bye bye.. ㅠ.ㅠ" );
+					System.out.println(getName() + ": bye bye.. ㅠ.ㅠ");
+					try {
+						s.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					stop();
-				}
-				
-				catch (Exception e) {
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
+
 			}
 		}
 	}
@@ -63,7 +71,7 @@ public class ChatServer {
 			ois = new ObjectInputStream(s.getInputStream());
 			oos = new ObjectOutputStream(s.getOutputStream());
 			users.add(new User(s, ois, oos)); // 사용자 정보저장
-			ChatServerThread cs = new ChatServerThread(ois);
+			ChatServerThread cs = new ChatServerThread(ois, s);
 			cs.start(); // 쓰레드 생성
 
 		} catch (Exception e) {
@@ -84,7 +92,7 @@ public class ChatServer {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	public void removeClient(ObjectInputStream ois) {
@@ -95,8 +103,8 @@ public class ChatServer {
 	}
 
 	public static void main(String[] args) {
-		ChatServer server = new ChatServer(8080, "localhost");
-		while(true) {
+		ChatServer server = new ChatServer(8888, "localhost");
+		while (true) {
 			server.go();
 		}
 	}
