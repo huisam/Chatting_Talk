@@ -20,7 +20,7 @@ public void go() {
 		ois = new ObjectInputStream(s.getInputStream());
 		oos = new ObjectOutputStream(s.getOutputStream());
 		users.add(new User(s, ois, oos)); // 4.사용자 정보저장
-		ChatServerThread cs = new ChatServerThread(ois);
+		ChatServerThread cs = new ChatServerThread(ois, s);
 		cs.start(); // 5.쓰레드 생성
 	} catch (Exception e) {
 		e.printStackTrace();
@@ -31,9 +31,11 @@ public void go() {
 ```java
 class ChatServerThread extends Thread {
 	private ObjectInputStream ois;
+	private Socket s;
 
-	public ChatServerThread(ObjectInputStream ois) {
+	public ChatServerThread(ObjectInputStream ois, Socket s) {
 		this.ois = ois;
+		this.s = s;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -46,6 +48,11 @@ class ChatServerThread extends Thread {
 			} catch(EOFException ee) {
 				removeClient(ois); // 3. 연결 끊긴 예외 발생시
 				System.out.println(getName() + ": bye bye.. ㅠ.ㅠ" );
+				try {
+					s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				stop(); // 4. 쓰레드종료
 			}
 			catch (Exception e) {
